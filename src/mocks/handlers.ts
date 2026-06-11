@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { announcementDetail, announcementsList } from './fixtures/announcements';
 import { consentFormDetail, consentFormsList } from './fixtures/consent-forms';
+import { announcementDraft, consentFormDraft } from './fixtures/drafts';
 import {
   customGroups,
   groupsAssigned,
@@ -28,7 +29,7 @@ export const handlers = [
   }),
 
   http.get(`${BASE}/announcements/drafts/:draftId`, () => {
-    return HttpResponse.json(envelope([announcementDetail]));
+    return HttpResponse.json(envelope([announcementDraft]));
   }),
 
   http.get(`${BASE}/announcements/:postId`, () => {
@@ -45,7 +46,7 @@ export const handlers = [
   }),
 
   http.get(`${BASE}/consentForms/drafts/:draftId`, () => {
-    return HttpResponse.json(envelope([consentFormDetail]));
+    return HttpResponse.json(envelope([consentFormDraft]));
   }),
 
   http.get(`${BASE}/consentForms/:formId`, () => {
