@@ -231,6 +231,36 @@ Flags default to off if the config endpoint fails.
 
 `PostPreview` renders the composed post as parents would see it in the PG app. Receives the current form state and renders a read-only preview panel (toggleable via Eye/EyeOff icon).
 
+## Testing
+
+### Infrastructure
+
+Add Vitest + @testing-library as dev dependencies:
+
+- `vitest` — test runner
+- `@testing-library/react` — component rendering
+- `@testing-library/jest-dom` — DOM matchers
+- `jsdom` — browser environment for hooks/components
+
+Vitest config lives at `vitest.config.ts` (separate from rsbuild config).
+
+### Tests to Migrate
+
+| Legacy file                                      | Target location                                            |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| `api/client.test.ts`                             | `features/posts/api/client.test.ts`                        |
+| `api/mappers.test.ts`                            | `features/posts/api/mappers.test.ts`                       |
+| `containers/CreatePostView.reducer.test.ts`      | `features/posts/state/reducer.test.ts`                     |
+| `containers/CreatePostView.validation.test.tsx`  | `features/posts/validation/create-post-validation.test.ts` |
+| `hooks/useAutoSave.test.tsx`                     | `features/posts/hooks/useAutoSave.test.tsx`                |
+| `hooks/useUnsavedChangesGuard.test.tsx`          | `features/posts/hooks/useUnsavedChangesGuard.test.tsx`     |
+| `components/posts/ReminderSection.test.tsx`      | `features/posts/components/ReminderSection.test.tsx`       |
+| `components/posts/RichTextToolbar.test.tsx`      | `features/posts/components/RichTextToolbar.test.tsx`       |
+| `components/posts/SchedulePickerDialog.test.tsx` | `features/posts/components/SchedulePickerDialog.test.tsx`  |
+| `components/posts/summarise-recipients.test.ts`  | `features/posts/components/summarise-recipients.test.ts`   |
+
+Tests are colocated alongside their source files.
+
 ## Out of Scope
 
 - Staff-in-charge editor/viewer access type (net-new, PGTW-7)
