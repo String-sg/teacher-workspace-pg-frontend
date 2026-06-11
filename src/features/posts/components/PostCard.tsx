@@ -1,8 +1,6 @@
 import { Bell, CalendarClock, CalendarDays, HelpCircle, MapPin, Paperclip } from 'lucide-react';
 import { useState } from 'react';
 
-import type { ApiSchoolStaff } from '~/features/posts/api/types';
-import { EnquiryEmailSelector } from '~/features/posts/components/EnquiryEmailSelector';
 import {
   Card,
   CardContent,
@@ -13,6 +11,8 @@ import {
   Separator,
 } from '~/components/ui';
 import type { ConsentFormPost, Post, ReminderConfig } from '~/data/posts-registry';
+import type { ApiSchoolStaff } from '~/features/posts/api/types';
+import { EnquiryEmailSelector } from '~/features/posts/components/EnquiryEmailSelector';
 import { formatDate, formatDateTime } from '~/helpers/dateTime';
 
 interface Attachment {

@@ -17,11 +17,11 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { FormQuestion } from '~/data/posts-registry';
+import type { PostFormState, UploadingFile } from '~/features/posts/state/initial-state';
 import { formatFileSize } from '~/helpers/attachments';
 import { formatDateTime, formatLocalDate, formatLocalDateTimeRange } from '~/helpers/dateTime';
 import { createRichTextExtensions, extractTextFromTiptap } from '~/helpers/tiptap';
 import { cn } from '~/lib/utils';
-import type { PostFormState, UploadingFile } from '~/features/posts/state/initial-state';
 
 import { summariseRecipients } from './summarise-recipients';
 

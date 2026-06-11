@@ -14,10 +14,26 @@ import type { LoaderFunctionArgs } from 'react-router';
 import { Link, Navigate, useLoaderData, useNavigate, useParams } from 'react-router';
 
 import {
-  buildAnnouncementPayload,
-  buildConsentFormPayload,
-  type BuildPostPayloadInput,
-} from '~/features/posts/api/mappers';
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
+} from '~/components/ui';
+import {
+  describeScheduledSendFailure,
+  isAnnouncementDraftId,
+  isConsentFormDraftId,
+  isConsentFormId,
+  validatePostRoute,
+  type AnnouncementId,
+  type ConsentFormId,
+  type Post,
+} from '~/data/posts-registry';
 import {
   createAnnouncement,
   createConsentForm,
@@ -46,6 +62,11 @@ import {
   updateDraft,
 } from '~/features/posts/api/client';
 import { AppError, ValidationError } from '~/features/posts/api/errors';
+import {
+  buildAnnouncementPayload,
+  buildConsentFormPayload,
+  type BuildPostPayloadInput,
+} from '~/features/posts/api/mappers';
 import type {
   ApiConfig,
   ApiSchoolClass,
@@ -64,42 +85,24 @@ import { MAX_QUESTIONS, QuestionBuilder } from '~/features/posts/components/Ques
 import { ReminderSection } from '~/features/posts/components/ReminderSection';
 import { ResponseTypeSelector } from '~/features/posts/components/ResponseTypeSelector';
 import { RichTextEditor } from '~/features/posts/components/RichTextEditor';
-import { SchedulePickerDialog, type ScheduleWindow } from '~/features/posts/components/SchedulePickerDialog';
+import {
+  SchedulePickerDialog,
+  type ScheduleWindow,
+} from '~/features/posts/components/SchedulePickerDialog';
 import { SendConfirmationDialog } from '~/features/posts/components/SendConfirmationDialog';
 import { ShortcutsSection } from '~/features/posts/components/ShortcutsSection';
 import { VenueSection } from '~/features/posts/components/VenueSection';
 import { WebsiteLinksSection } from '~/features/posts/components/WebsiteLinksSection';
-import { formReducer } from '~/features/posts/state/reducer';
-import { INITIAL_STATE, type SelectedEntity } from '~/features/posts/state/initial-state';
 import { useAutoSave, type AutoSaveStatus } from '~/features/posts/hooks/useAutoSave';
 import { useUnsavedChangesGuard } from '~/features/posts/hooks/useUnsavedChangesGuard';
+import { INITIAL_STATE, type SelectedEntity } from '~/features/posts/state/initial-state';
+import { formReducer } from '~/features/posts/state/reducer';
 import {
   computeInlineErrors,
   hasPendingUploads,
   isCreatePostFormValid,
   type PostKind as ValidationPostKind,
 } from '~/features/posts/validation/create-post-validation';
-import {
-  Button,
-  Card,
-  CardContent,
-  Input,
-  Label,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Separator,
-} from '~/components/ui';
-import {
-  describeScheduledSendFailure,
-  isAnnouncementDraftId,
-  isConsentFormDraftId,
-  isConsentFormId,
-  validatePostRoute,
-  type AnnouncementId,
-  type ConsentFormId,
-  type Post,
-} from '~/data/posts-registry';
 import { textToTiptapDoc } from '~/helpers/tiptap';
 import { notify } from '~/lib/notify';
 import { cn } from '~/lib/utils';
@@ -235,8 +238,10 @@ function postToFormState(
     enquiryEmail: post.enquiryEmail ?? '',
     websiteLinks: (post.websiteLinks ?? []).slice(0, MAX_WEBSITE_LINKS),
     shortcuts: [] as string[],
-    attachments: (post.attachments ?? []).map((f) => ({ ...f })) as typeof INITIAL_STATE['attachments'],
-    photos: (post.photos ?? []).map((p) => ({ ...p })) as typeof INITIAL_STATE['photos'],
+    attachments: (post.attachments ?? []).map((f) => ({
+      ...f,
+    })) as (typeof INITIAL_STATE)['attachments'],
+    photos: (post.photos ?? []).map((p) => ({ ...p })) as (typeof INITIAL_STATE)['photos'],
   };
 
   if (post.kind === 'form') {
@@ -328,8 +333,7 @@ function toValidationKind(kind: PostKind | null): ValidationPostKind | null {
 
 function CreatePostPageInner({ editId }: { editId?: string }) {
   const navigate = useNavigate();
-  const { detail, classes, staff, session, configs } =
-    useLoaderData<CreatePostLoaderData>();
+  const { detail, classes, staff, session, configs } = useLoaderData<CreatePostLoaderData>();
 
   const scheduleEnabled = configs.flags.schedule_announcement_form_post?.enabled === true;
   const declareTravelsEnabled = configs.flags.absence_submission?.enabled === true;
@@ -371,10 +375,7 @@ function CreatePostPageInner({ editId }: { editId?: string }) {
   const [selectedType, setSelectedType] = useState<PostKind | null>(() => {
     if (!editId) return null;
     if (detail?.kind === 'form') return 'post-with-response';
-    if (
-      detail &&
-      (detail.responseType === 'acknowledge' || detail.responseType === 'yes-no')
-    ) {
+    if (detail && (detail.responseType === 'acknowledge' || detail.responseType === 'yes-no')) {
       return 'post-with-response';
     }
     return 'post';
@@ -409,10 +410,10 @@ function CreatePostPageInner({ editId }: { editId?: string }) {
     isEditing &&
     Boolean(
       detail &&
-        (detail.status === 'posted' ||
-          detail.status === 'open' ||
-          detail.status === 'closed' ||
-          detail.status === 'posting'),
+      (detail.status === 'posted' ||
+        detail.status === 'open' ||
+        detail.status === 'closed' ||
+        detail.status === 'posting'),
     );
 
   const isFailedScheduledEdit =
@@ -670,20 +671,22 @@ function CreatePostPageInner({ editId }: { editId?: string }) {
                   </Button>
                 )}
                 <Popover open={showValidationPopover} onOpenChange={setShowValidationPopover}>
-                  <PopoverTrigger render={
-                    <Button
-                      variant="default"
-                      size="sm"
-                      disabled={isSaving}
-                      onClick={handlePostClick}
-                      className={cn(
-                        !isFormValid && '!bg-muted !text-muted-foreground/40 hover:!bg-muted',
-                      )}
-                    >
-                      <Send className="mr-1.5 h-4 w-4" />
-                      Post
-                    </Button>
-                  } />
+                  <PopoverTrigger
+                    render={
+                      <Button
+                        variant="default"
+                        size="sm"
+                        disabled={isSaving}
+                        onClick={handlePostClick}
+                        className={cn(
+                          !isFormValid && '!bg-muted !text-muted-foreground/40 hover:!bg-muted',
+                        )}
+                      >
+                        <Send className="mr-1.5 h-4 w-4" />
+                        Post
+                      </Button>
+                    }
+                  />
                   <PopoverContent side="top" align="end" className="w-64 space-y-2 p-4">
                     <p className="text-sm font-semibold">Complete these fields before posting</p>
                     <ul className="space-y-1">
@@ -848,9 +851,7 @@ function CreatePostPageInner({ editId }: { editId?: string }) {
                           checked={isSelected}
                           onChange={() => {
                             const next = isSelected
-                              ? state.selectedStaff.filter(
-                                  (sel) => sel.id !== s.staffId.toString(),
-                                )
+                              ? state.selectedStaff.filter((sel) => sel.id !== s.staffId.toString())
                               : [
                                   ...state.selectedStaff,
                                   {

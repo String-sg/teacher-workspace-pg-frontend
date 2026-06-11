@@ -4,22 +4,6 @@ import { Link, useLoaderData, useNavigate, useRevalidator, useSearchParams } fro
 import { toast } from 'sonner';
 
 import {
-  deleteAnnouncement,
-  deleteConsentForm,
-  deleteConsentFormDraft,
-  deleteDraft,
-  duplicateAnnouncement,
-  duplicateAnnouncementDraft,
-  duplicateConsentForm,
-  duplicateConsentFormDraft,
-  getConfigs,
-  loadConsentPostsList,
-  loadPostsList,
-} from '~/features/posts/api/client';
-import { NotFoundError } from '~/features/posts/api/errors';
-import type { ApiConfig } from '~/features/posts/api/types';
-import { DeletePostDialog } from '~/features/posts/components/DeletePostDialog';
-import {
   Badge,
   Button,
   DropdownMenu,
@@ -40,6 +24,22 @@ import {
   type AnnouncementId,
   type Post,
 } from '~/data/posts-registry';
+import {
+  deleteAnnouncement,
+  deleteConsentForm,
+  deleteConsentFormDraft,
+  deleteDraft,
+  duplicateAnnouncement,
+  duplicateAnnouncementDraft,
+  duplicateConsentForm,
+  duplicateConsentFormDraft,
+  getConfigs,
+  loadConsentPostsList,
+  loadPostsList,
+} from '~/features/posts/api/client';
+import { NotFoundError } from '~/features/posts/api/errors';
+import type { ApiConfig } from '~/features/posts/api/types';
+import { DeletePostDialog } from '~/features/posts/components/DeletePostDialog';
 import { formatDate } from '~/helpers/dateTime';
 import { notify } from '~/lib/notify';
 

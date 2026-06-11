@@ -2,3 +2,28 @@ node_modules/
 dist/
 .env
 *.local
+
+# Module Federation
+.mf/
+
+# pnpm local store
+.pnpm-store/
+
+# Claude Code
+.claude/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Logs
+*.log

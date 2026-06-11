@@ -72,24 +72,12 @@ describe('filterPastSlots', () => {
 
 describe('SchedulePickerDialog', () => {
   it('renders the dialog when open is true', () => {
-    render(
-      <SchedulePickerDialog
-        open={true}
-        onOpenChange={vi.fn()}
-        onConfirm={vi.fn()}
-      />,
-    );
+    render(<SchedulePickerDialog open={true} onOpenChange={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.getByText('Schedule post')).toBeInTheDocument();
   });
 
   it('does not render dialog content when open is false', () => {
-    render(
-      <SchedulePickerDialog
-        open={false}
-        onOpenChange={vi.fn()}
-        onConfirm={vi.fn()}
-      />,
-    );
+    render(<SchedulePickerDialog open={false} onOpenChange={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.queryByText('Schedule post')).not.toBeInTheDocument();
   });
 
@@ -106,13 +94,7 @@ describe('SchedulePickerDialog', () => {
   });
 
   it('disables the Schedule button when no date is selected', () => {
-    render(
-      <SchedulePickerDialog
-        open={true}
-        onOpenChange={vi.fn()}
-        onConfirm={vi.fn()}
-      />,
-    );
+    render(<SchedulePickerDialog open={true} onOpenChange={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.getByRole('button', { name: 'Schedule' })).toBeDisabled();
   });
 });

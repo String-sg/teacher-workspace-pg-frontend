@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronUp, HelpCircle, Plus, Trash2 } from 'lucide-react';
 
 import { Button, Input, Textarea } from '~/components/ui';
-import type { PostFormAction } from '~/features/posts/state/actions';
 import type { FormQuestion } from '~/data/posts-registry';
+import type { PostFormAction } from '~/features/posts/state/actions';
 import { cn } from '~/lib/utils';
 
 export const MAX_QUESTIONS = 5;

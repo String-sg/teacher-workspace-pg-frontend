@@ -601,9 +601,7 @@ function fetchSharedConsentForms() {
   return fetchApi<ApiConsentFormList>('/consentForms/shared');
 }
 
-export async function fetchConsentFormDetail(
-  formId: ConsentFormId,
-): Promise<ApiConsentFormDetail> {
+export async function fetchConsentFormDetail(formId: ConsentFormId): Promise<ApiConsentFormDetail> {
   // pgw strips the `cf_` prefix when addressing the detail endpoint. The
   // response shape is `body: [<detail>]` (single-element array) — unwrap.
   const numericId = formId.slice(3);

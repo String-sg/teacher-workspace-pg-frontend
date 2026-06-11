@@ -1,8 +1,6 @@
 import { FileText, GripVertical, ImageIcon, Info, Loader2, Paperclip, X } from 'lucide-react';
 import { useRef, useState, type Dispatch } from 'react';
 
-import type { AttachmentUploadType } from '~/features/posts/api/client';
-import { uploadAttachment } from '~/features/posts/api/client';
 import {
   Badge,
   Button,
@@ -13,6 +11,8 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '~/components/ui';
+import type { AttachmentUploadType } from '~/features/posts/api/client';
+import { uploadAttachment } from '~/features/posts/api/client';
 import type { PostFormAction } from '~/features/posts/state/actions';
 import type { UploadingFile } from '~/features/posts/state/initial-state';
 import {
