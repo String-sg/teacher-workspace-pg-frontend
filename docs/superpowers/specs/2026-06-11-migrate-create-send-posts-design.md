@@ -29,9 +29,9 @@ src/
 │   └── posts/
 │       ├── api/
 │       │   ├── client.ts          # fetch helpers, mutateApi, postMultipart, upload flow
-│       │   ├── errors.ts          # PGError hierarchy
+│       │   ├── errors.ts          # Error hierarchy (no PG prefix)
 │       │   ├── mappers.ts         # wire <-> domain transformations
-│       │   └── types.ts           # PG API response/payload types
+│       │   └── types.ts           # API response/payload types (no PG prefix)
 │       ├── components/
 │       │   ├── AttachmentSection.tsx
 │       │   ├── DeletePostDialog.tsx
@@ -182,17 +182,17 @@ Each step dispatches `UPDATE_UPLOAD` to reflect row status in the UI.
 
 ## Error Handling
 
-Preserved exactly from legacy:
+Preserved from legacy, with `PG` prefix removed:
 
-| Error Class             | Trigger                           | Behavior                           |
-| ----------------------- | --------------------------------- | ---------------------------------- |
-| `PGSessionExpiredError` | resultCode -401/-4012             | Redirect to `/session-expired`     |
-| `PGValidationError`     | resultCode -400/-4001/-4003/-4004 | Inline field errors (no toast)     |
-| `PGCsrfError`           | resultCode -4013                  | One-shot token refresh + replay    |
-| `PGTimeoutError`        | Client-side deadline              | Distinct from user-initiated abort |
-| `PGNotFoundError`       | resultCode -404 or HTTP 404       | "Post not found" boundary          |
-| `PGRedirectError`       | 302 with `redirect: 'manual'`     | Navigate to Location header        |
-| `PGError` (generic)     | Any other failure                 | Toast via `notify.error()`         |
+| Error Class           | Trigger                           | Behavior                           |
+| --------------------- | --------------------------------- | ---------------------------------- |
+| `SessionExpiredError` | resultCode -401/-4012             | Redirect to `/session-expired`     |
+| `ValidationError`     | resultCode -400/-4001/-4003/-4004 | Inline field errors (no toast)     |
+| `CsrfError`           | resultCode -4013                  | One-shot token refresh + replay    |
+| `TimeoutError`        | Client-side deadline              | Distinct from user-initiated abort |
+| `NotFoundError`       | resultCode -404 or HTTP 404       | "Post not found" boundary          |
+| `RedirectError`       | 302 with `redirect: 'manual'`     | Navigate to Location header        |
+| `AppError` (generic)  | Any other failure                 | Toast via `notify.error()`         |
 
 ## Validation Rules
 
@@ -242,6 +242,7 @@ Flags default to off if the config endpoint fails.
 
 ## Migration Notes
 
+- **Drop `PG` prefix from all types** — since types live inside `features/posts/`, the prefix is redundant. E.g. `PGApiAnnouncementDetail` → `ApiAnnouncementDetail`, `PGError` → `AppError`, `PGApiSession` → `ApiSession`, `PGStatus` → `PostStatus`, `PGPost` → `Post`, etc.
 - All domain types from `data/mock-pg-announcements.ts` move to `data/posts-registry.ts`
 - Mapper functions from `api/mappers.ts` are ported with their test assertions
 - The `~/components/comms/` directory (entity-selector, staff-selector, student-recipient-selector) moves to `features/posts/components/` since it's post-specific
