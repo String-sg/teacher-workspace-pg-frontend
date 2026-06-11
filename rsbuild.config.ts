@@ -1,9 +1,16 @@
+import path from 'node:path';
+
 import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import tailwindcss from '@tailwindcss/postcss';
 
 export default defineConfig({
+  source: {
+    alias: {
+      '~': path.resolve(__dirname, 'src'),
+    },
+  },
   plugins: [
     pluginReact(),
     pluginModuleFederation({
