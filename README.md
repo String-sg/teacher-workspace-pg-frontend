@@ -22,24 +22,24 @@ The dev server starts at `http://localhost:3001`. MSW intercepts all API calls w
 
 ### Available Routes
 
-| Route | Page |
-|-------|------|
-| `/posts` | Posts list (announcements + consent forms) |
-| `/posts/new` | Create new post |
-| `/posts/:id` | Post detail (read-only) |
-| `/posts/:id/edit` | Edit draft |
+| Route             | Page                                       |
+| ----------------- | ------------------------------------------ |
+| `/posts`          | Posts list (announcements + consent forms) |
+| `/posts/new`      | Create new post                            |
+| `/posts/:id`      | Post detail (read-only)                    |
+| `/posts/:id/edit` | Edit draft                                 |
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server (port 3001) |
-| `pnpm build` | Production build |
-| `pnpm test` | Run tests (Vitest) |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm typecheck` | TypeScript type checking |
-| `pnpm lint` | Lint with oxlint |
-| `pnpm format` | Format with oxfmt |
+| Command           | Description                  |
+| ----------------- | ---------------------------- |
+| `pnpm dev`        | Start dev server (port 3001) |
+| `pnpm build`      | Production build             |
+| `pnpm test`       | Run tests (Vitest)           |
+| `pnpm test:watch` | Run tests in watch mode      |
+| `pnpm typecheck`  | TypeScript type checking     |
+| `pnpm lint`       | Lint with oxlint             |
+| `pnpm format`     | Format with oxfmt            |
 
 ## Project Structure
 
@@ -74,7 +74,9 @@ Exposed as remote `pg` with entry `./App`. The host shell imports it at runtime:
 
 ```js
 // Host config
-remotes: { pg: 'pg@http://localhost:3001/mf-manifest.json' }
+remotes: {
+  pg: 'pg@http://localhost:3001/mf-manifest.json';
+}
 ```
 
 ## Testing
@@ -84,6 +86,7 @@ pnpm test
 ```
 
 87 tests across 8 files covering:
+
 - API client (CSRF retry, error handling, schedule operations)
 - API mappers (summary/detail/payload transformations)
 - Form reducer (all action types)

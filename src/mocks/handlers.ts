@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+
 import { announcementDetail, announcementsList } from './fixtures/announcements';
 import { consentFormDetail, consentFormsList } from './fixtures/consent-forms';
 import { announcementDraft, consentFormDraft } from './fixtures/drafts';
@@ -135,15 +136,21 @@ export const handlers = [
   }),
 
   http.post(`${BASE}/announcements/drafts/schedule`, () => {
-    return HttpResponse.json(envelope({ announcementDraftId: 888, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ announcementDraftId: 888, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.post(`${BASE}/announcements/duplicate`, () => {
-    return HttpResponse.json(envelope({ announcementDraftId: 777, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ announcementDraftId: 777, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.post(`${BASE}/announcements/drafts/duplicate`, () => {
-    return HttpResponse.json(envelope({ announcementDraftId: 776, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ announcementDraftId: 776, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.delete(`${BASE}/announcements/:postId`, () => {
@@ -167,15 +174,21 @@ export const handlers = [
   }),
 
   http.post(`${BASE}/consentForms/drafts/schedule`, () => {
-    return HttpResponse.json(envelope({ consentFormDraftId: 888, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ consentFormDraftId: 888, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.post(`${BASE}/consentForms/duplicate`, () => {
-    return HttpResponse.json(envelope({ consentFormDraftId: 777, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ consentFormDraftId: 777, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.post(`${BASE}/consentForms/drafts/duplicate`, () => {
-    return HttpResponse.json(envelope({ consentFormDraftId: 776, updatedAt: new Date().toISOString() }));
+    return HttpResponse.json(
+      envelope({ consentFormDraftId: 776, updatedAt: new Date().toISOString() }),
+    );
   }),
 
   http.delete(`${BASE}/consentForms/:formId`, () => {

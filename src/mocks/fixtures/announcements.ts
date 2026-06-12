@@ -9,7 +9,7 @@ export const announcementsList: ApiAnnouncementSummary[] = [
     status: 'POSTED',
     responseType: 'VIEW_ONLY',
     toParentsOf: ['3A', '3B', '3C'],
-    readMetrics: { readPerStudent: 0.72, totalStudents: 90 },
+    readMetrics: { readPerStudent: 0.58, totalStudents: 12 },
     scheduledSendFailureCode: null,
     createdByName: 'Ms Tan Wei Ling',
   },
@@ -92,7 +92,10 @@ export const announcementDetail: ApiAnnouncementDetail = {
           {
             type: 'listItem',
             content: [
-              { type: 'paragraph', content: [{ type: 'text', text: 'Date: Friday, 20 June 2026' }] },
+              {
+                type: 'paragraph',
+                content: [{ type: 'text', text: 'Date: Friday, 20 June 2026' }],
+              },
             ],
           },
           {
@@ -117,9 +120,7 @@ export const announcementDetail: ApiAnnouncementDetail = {
   createdAt: '2026-06-09T10:00:00+08:00',
   postedDate: '2026-06-10T08:00:00+08:00',
   enquiryEmailAddress: 'general_office@greendale.edu.sg',
-  attachments: [
-    { attachmentId: 501, name: 'Concert_Programme.pdf', size: 245000, url: '#' },
-  ],
+  attachments: [{ attachmentId: 501, name: 'Concert_Programme.pdf', size: 245000, url: '#' }],
   images: [],
   shortcutLink: [],
   webLinkList: [],
@@ -156,6 +157,13 @@ export const announcementDetail: ApiAnnouncementDetail = {
     { studentId: 2003, studentName: 'Raj Kumar', className: '3B', readStatus: null },
     { studentId: 2004, studentName: 'Sarah Lim', className: '3B', readStatus: 'READ' },
     { studentId: 2005, studentName: 'Muhammad Hafiz', className: '3A', readStatus: null },
+    { studentId: 2006, studentName: 'Nurul Aisyah', className: '3A', readStatus: 'READ' },
+    { studentId: 2007, studentName: 'Tan Jun Wei', className: '3B', readStatus: null },
+    { studentId: 2008, studentName: 'Kavitha Rajan', className: '3C', readStatus: 'READ' },
+    { studentId: 2009, studentName: 'Wong Kai Xuan', className: '3C', readStatus: 'READ' },
+    { studentId: 2010, studentName: 'Amir Syafiq', className: '3C', readStatus: null },
+    { studentId: 2011, studentName: 'Jessica Ng', className: '3A', readStatus: 'READ' },
+    { studentId: 2012, studentName: 'Ravi Chandran', className: '3B', readStatus: null },
   ],
   status: 'POSTED',
   scheduledSendAt: null,

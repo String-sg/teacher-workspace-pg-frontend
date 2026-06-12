@@ -1,4 +1,8 @@
-import type { ApiAnnouncementDraft, ApiAnnouncementTarget, ApiConsentFormDraft } from '~/features/posts/api/types';
+import type {
+  ApiAnnouncementDraft,
+  ApiAnnouncementTarget,
+  ApiConsentFormDraft,
+} from '~/features/posts/api/types';
 
 const targets: ApiAnnouncementTarget[] = [
   {
@@ -103,9 +107,7 @@ export const announcementDraft: ApiAnnouncementDraft = {
   },
   enquiryEmailAddress: 'general_office@greendale.edu.sg',
   staffGroups: [],
-  studentGroups: [
-    { type: 'class', label: '3A', value: 301 },
-  ],
+  studentGroups: [{ type: 'class', label: '3A', value: 301 }],
   images: { images: [], imagesOrigin: '' },
   attachments: [],
   urls: [],

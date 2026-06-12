@@ -20,7 +20,9 @@ import {
   postHref,
   validatePostRoute,
   type AnnouncementId,
+  type AnnouncementPost,
   type ConsentFormId,
+  type ConsentFormPost,
   type Post,
 } from '~/data/posts-registry';
 import {
@@ -41,12 +43,22 @@ import {
 } from '~/features/posts/api/client';
 import { AppError, NotFoundError } from '~/features/posts/api/errors';
 import type { ApiConfig, ApiSchoolStaff, ApiSession } from '~/features/posts/api/types';
+import { ConsentFormHistoryList } from '~/features/posts/components/ConsentFormHistoryList';
 import { DeletePostDialog } from '~/features/posts/components/DeletePostDialog';
 import {
   PostCard,
   isoToSgtDate,
   type PostCardEditState,
 } from '~/features/posts/components/PostCard';
+import {
+  ReadTrackingCards,
+  type ReadCardFilter,
+} from '~/features/posts/components/ReadTrackingCards';
+import {
+  DEFAULT_RECIPIENT_FILTER,
+  type RecipientFilterValue,
+} from '~/features/posts/components/RecipientFilterPopover';
+import { RecipientReadTable } from '~/features/posts/components/RecipientReadTable';
 import { SchedulePickerDialog } from '~/features/posts/components/SchedulePickerDialog';
 import { formatDate, formatDateTime } from '~/helpers/dateTime';
 import { notify } from '~/lib/notify';
@@ -403,6 +415,14 @@ const PostDetailPage: React.FC = () => {
     sizeKb: a.size / 1024,
   }));
 
+  const cardProps = {
+    isEditing,
+    editState,
+    onEditStateChange: handleEditStateChange,
+    staffList: staff,
+    emailOptions,
+  };
+
   return (
     <div className="space-y-6 px-6 py-6">
       <DetailHeader
@@ -424,29 +444,11 @@ const PostDetailPage: React.FC = () => {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main content area — placeholder for detail stats/table components */}
-        <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-lg border bg-background p-6">
-            <p className="text-sm text-muted-foreground">
-              {post.description || 'No description provided.'}
-            </p>
-          </div>
-        </div>
-
-        {/* Post card sidebar */}
-        <div className="lg:sticky lg:top-6 lg:self-start">
-          <PostCard
-            post={post}
-            attachments={attachments}
-            isEditing={isEditing}
-            editState={editState}
-            onEditStateChange={handleEditStateChange}
-            staffList={staff}
-            emailOptions={emailOptions}
-          />
-        </div>
-      </div>
+      {post.kind === 'announcement' ? (
+        <AnnouncementDetail post={post} attachments={attachments} {...cardProps} />
+      ) : (
+        <ConsentFormDetail post={post} attachments={attachments} {...cardProps} />
+      )}
 
       <DeletePostDialog
         open={deleteOpen}
@@ -459,5 +461,119 @@ const PostDetailPage: React.FC = () => {
     </div>
   );
 };
+
+// ─── Subviews ──────────────────────────────────────────────────────────────
+
+interface DetailCardProps {
+  isEditing: boolean;
+  editState: PostCardEditState;
+  onEditStateChange: (patch: Partial<PostCardEditState>) => void;
+  staffList: ApiSchoolStaff[];
+  emailOptions: string[];
+  attachments: { name: string; sizeKb: number }[];
+}
+
+function AnnouncementDetail({
+  post,
+  attachments,
+  isEditing,
+  editState,
+  onEditStateChange,
+  staffList,
+  emailOptions,
+}: { post: AnnouncementPost } & DetailCardProps) {
+  const [filter, setFilter] = useState<RecipientFilterValue>(DEFAULT_RECIPIENT_FILTER);
+  const readCardFilter: ReadCardFilter =
+    filter.status === 'read' ? 'read' : filter.status === 'unread' ? 'unread' : null;
+
+  const showTable = post.status === 'posted' && post.stats.totalCount > 0;
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
+        <ReadTrackingCards
+          responseType={post.responseType}
+          stats={post.stats}
+          readFilter={readCardFilter}
+          onReadFilterChange={(next) =>
+            setFilter((f) => ({ ...f, status: next === null ? 'all' : next }))
+          }
+        />
+
+        {showTable && (
+          <div className="space-y-4 rounded-lg border bg-background p-6">
+            <p className="text-sm font-semibold">Status</p>
+            <RecipientReadTable
+              recipients={post.recipients}
+              responseType={post.responseType}
+              filter={filter}
+              onFilterChange={setFilter}
+              exportId={String(post.id)}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="lg:sticky lg:top-6 lg:self-start">
+        <PostCard
+          post={post}
+          attachments={attachments}
+          isEditing={isEditing}
+          editState={editState}
+          onEditStateChange={onEditStateChange}
+          staffList={staffList}
+          emailOptions={emailOptions}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ConsentFormDetail({
+  post,
+  attachments,
+  isEditing,
+  editState,
+  onEditStateChange,
+  staffList,
+  emailOptions,
+}: { post: ConsentFormPost } & DetailCardProps) {
+  const showTable =
+    (post.status === 'open' || post.status === 'closed') && post.stats.totalCount > 0;
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
+        <ReadTrackingCards kind="form" responseType={post.responseType} stats={post.stats} />
+
+        {showTable && (
+          <div className="space-y-4 rounded-lg border bg-background p-6">
+            <p className="text-sm font-semibold">Status</p>
+            <RecipientReadTable
+              kind="form"
+              recipients={post.recipients}
+              responseType={post.responseType}
+              exportId={String(post.id)}
+            />
+          </div>
+        )}
+
+        <ConsentFormHistoryList entries={post.history} />
+      </div>
+
+      <div className="lg:sticky lg:top-6 lg:self-start">
+        <PostCard
+          post={post}
+          attachments={attachments}
+          isEditing={isEditing}
+          editState={editState}
+          onEditStateChange={onEditStateChange}
+          staffList={staffList}
+          emailOptions={emailOptions}
+        />
+      </div>
+    </div>
+  );
+}
 
 export { PostDetailPage };
