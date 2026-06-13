@@ -28,5 +28,8 @@ export default defineConfig({
   },
   server: {
     port: Number(process.env.PORT) || 3001,
+    publicDir: {
+      ignore: ['**/mockServiceWorker.js'],
+    },
   },
 });
