@@ -167,7 +167,7 @@ function isRedirectResponse(res: Response): boolean {
 }
 
 async function fetchApi<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, { redirect: 'manual' });
+  const res = await fetch(`${API_BASE}${path}`, { redirect: 'manual', credentials: 'include' });
   if (isRedirectResponse(res)) handleRedirectResponse(res);
   if (!res.ok) await handleErrorResponse(res);
   return unwrapEnvelope<T>(await res.json());
@@ -180,7 +180,7 @@ async function fetchApi<T>(path: string): Promise<T> {
  * for the staff-scoped surface.
  */
 async function fetchApiRoot<T>(path: string): Promise<T> {
-  const res = await fetch(`/api${path}`, { redirect: 'manual' });
+  const res = await fetch(`/api${path}`, { redirect: 'manual', credentials: 'include' });
   if (isRedirectResponse(res)) handleRedirectResponse(res);
   if (!res.ok) await handleErrorResponse(res);
   return unwrapEnvelope<T>(await res.json());
@@ -249,7 +249,7 @@ function withTimeout(
  */
 async function refreshCsrfToken(): Promise<void> {
   try {
-    await fetch(`${API_BASE}/session/current`, { method: 'GET' });
+    await fetch(`${API_BASE}/session/current`, { method: 'GET', credentials: 'include' });
   } catch {
     // Ignore — the replay below will surface a terminal failure if the token
     // truly can't be refreshed.
@@ -270,6 +270,7 @@ async function mutateApi<T>(
       body: JSON.stringify(body),
       signal: timeout.signal,
       redirect: 'manual',
+      credentials: 'include',
     });
     if (isRedirectResponse(res)) handleRedirectResponse(res);
     if (!res.ok) await handleErrorResponse(res);
@@ -305,7 +306,11 @@ async function mutateApi<T>(
 }
 
 async function deleteApi(path: string): Promise<void> {
-  const res = await fetch(`${API_BASE}${path}`, { method: 'DELETE', redirect: 'manual' });
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'DELETE',
+    redirect: 'manual',
+    credentials: 'include',
+  });
   if (isRedirectResponse(res)) handleRedirectResponse(res);
   if (!res.ok) await handleErrorResponse(res);
 }
@@ -328,6 +333,7 @@ async function postMultipart<T>(
       body: formData,
       signal: timeout.signal,
       redirect: 'manual',
+      credentials: 'include',
     });
     if (isRedirectResponse(res)) handleRedirectResponse(res);
     if (!res.ok) await handleErrorResponse(res);
@@ -1042,7 +1048,9 @@ export async function verifyAttachmentUpload(
   const deadline = Date.now() + timeoutMs;
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const res = await fetch(`/api/files/2/postUploadVerification?attachmentId=${attachmentId}`);
+    const res = await fetch(`/api/files/2/postUploadVerification?attachmentId=${attachmentId}`, {
+      credentials: 'include',
+    });
     if (!res.ok) await handleErrorResponse(res);
     const text = await res.text();
     const body = text ? (unwrapEnvelope(JSON.parse(text)) as { verified?: boolean }) : {};

@@ -47,6 +47,12 @@ describe('createDraft', () => {
     expect(call[1].method).toBe('POST');
   });
 
+  it('sets credentials: include on the fetch request', async () => {
+    await createDraft(base);
+    const call = (globalThis.fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(call[1].credentials).toBe('include');
+  });
+
   it('returns the announcementDraftId from the envelope body', async () => {
     const out = await createDraft(base);
     expect(out).toEqual({ announcementDraftId: 42 });
