@@ -1022,7 +1022,6 @@ const TRUSTED_UPLOAD_ORIGINS = (
   .filter(Boolean);
 
 export function isPresignedUrlTrusted(url: string): boolean {
-  if (url.startsWith('/')) return true;
   let parsed: URL;
   try {
     parsed = new URL(url);

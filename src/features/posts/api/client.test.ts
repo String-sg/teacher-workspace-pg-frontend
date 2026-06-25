@@ -407,10 +407,6 @@ describe('scheduleExistingConsentFormDraft', () => {
 });
 
 describe('isPresignedUrlTrusted', () => {
-  it('accepts relative paths (MSW mock URLs)', () => {
-    expect(isPresignedUrlTrusted('/api/files/2/mockUpload')).toBe(true);
-  });
-
   it('accepts standard S3 bucket URLs', () => {
     expect(
       isPresignedUrlTrusted('https://my-bucket.s3.ap-southeast-1.amazonaws.com/key?sig=abc'),
@@ -443,5 +439,13 @@ describe('isPresignedUrlTrusted', () => {
 
   it('rejects javascript: protocol', () => {
     expect(isPresignedUrlTrusted('javascript:alert(1)')).toBe(false);
+  });
+
+  it('rejects protocol-relative URLs', () => {
+    expect(isPresignedUrlTrusted('//evil.example.com/collect')).toBe(false);
+  });
+
+  it('rejects relative paths', () => {
+    expect(isPresignedUrlTrusted('/api/files/2/mockUpload')).toBe(false);
   });
 });
