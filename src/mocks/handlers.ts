@@ -298,7 +298,7 @@ export const handlers = [
     return HttpResponse.json(
       envelope({
         attachmentId: 9001,
-        presignedUrl: 'https://mock-s3.local/upload',
+        presignedUrl: '/api/files/2/mockUpload',
         fields: { key: 'uploads/mock', policy: 'mock-policy', signature: 'mock-sig' },
       }),
     );
@@ -308,7 +308,7 @@ export const handlers = [
     return HttpResponse.json(envelope({ verified: true }));
   }),
 
-  http.post('https://mock-s3.local/upload', () => {
+  http.post('/api/files/2/mockUpload', () => {
     return new HttpResponse(null, { status: 204 });
   }),
 ];
