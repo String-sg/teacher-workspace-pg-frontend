@@ -151,9 +151,10 @@ function handleRedirectResponse(res: Response): never {
   const location = res.headers.get('location');
   if (location && typeof window !== 'undefined') {
     try {
-      // Accept absolute URLs and relative paths — PG confirmation pending (ask #9).
-      new URL(location, window.location.origin);
-      window.location.href = location;
+      const resolved = new URL(location, window.location.origin);
+      if (resolved.origin === window.location.origin) {
+        window.location.href = location;
+      }
     } catch {
       // Invalid URL — fall through to the thrown error below; the caller
       // decides how to recover.
