@@ -4,6 +4,7 @@ import {
   cancelAnnouncementSchedule,
   cancelConsentFormSchedule,
   createDraft,
+  isPresignedUrlTrusted,
   rescheduleAnnouncementDraft,
   rescheduleConsentFormDraft,
   scheduleExistingAnnouncementDraft,
@@ -408,5 +409,45 @@ describe('scheduleExistingConsentFormDraft', () => {
     const body = JSON.parse(call[1].body as string);
     expect(body.scheduledDateTime).toBe('2026-05-04T12:00:00+08:00');
     expect(body.scheduledSendAt).toBeUndefined();
+  });
+});
+
+describe('isPresignedUrlTrusted', () => {
+  it('accepts relative paths (MSW mock URLs)', () => {
+    expect(isPresignedUrlTrusted('/api/files/2/mockUpload')).toBe(true);
+  });
+
+  it('accepts standard S3 bucket URLs', () => {
+    expect(
+      isPresignedUrlTrusted('https://my-bucket.s3.ap-southeast-1.amazonaws.com/key?sig=abc'),
+    ).toBe(true);
+  });
+
+  it('accepts S3 path-style URLs', () => {
+    expect(isPresignedUrlTrusted('https://s3.ap-southeast-1.amazonaws.com/my-bucket/key')).toBe(
+      true,
+    );
+  });
+
+  it('accepts S3 us-east-1 legacy URL', () => {
+    expect(isPresignedUrlTrusted('https://my-bucket.s3.amazonaws.com/key')).toBe(true);
+  });
+
+  it('rejects cross-origin untrusted URLs', () => {
+    expect(isPresignedUrlTrusted('https://evil.example.com/collect')).toBe(false);
+  });
+
+  it('rejects non-HTTPS URLs', () => {
+    expect(isPresignedUrlTrusted('http://my-bucket.s3.ap-southeast-1.amazonaws.com/key')).toBe(
+      false,
+    );
+  });
+
+  it('rejects invalid URLs', () => {
+    expect(isPresignedUrlTrusted('not-a-url')).toBe(false);
+  });
+
+  it('rejects javascript: protocol', () => {
+    expect(isPresignedUrlTrusted('javascript:alert(1)')).toBe(false);
   });
 });

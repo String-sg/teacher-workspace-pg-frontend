@@ -1018,6 +1018,30 @@ export function validateAttachmentUpload(
   return postMultipart<PreUploadResponse>('/files/2/preUploadValidation', fd);
 }
 
+const S3_TRUSTED_PATTERN = /^(.+\.)?s3([.-].+)?\.amazonaws\.com$/;
+const TRUSTED_UPLOAD_ORIGINS = (
+  (import.meta.env as unknown as Record<string, string | undefined>).VITE_TRUSTED_UPLOAD_ORIGINS ??
+  ''
+)
+  .split(',')
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
+
+export function isPresignedUrlTrusted(url: string): boolean {
+  if (url.startsWith('/')) return true;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== 'https:') return false;
+  const hostname = parsed.hostname.toLowerCase();
+  if (S3_TRUSTED_PATTERN.test(hostname)) return true;
+  if (TRUSTED_UPLOAD_ORIGINS.includes(hostname)) return true;
+  return false;
+}
+
 /**
  * Step 2 — POST the file to the presigned URL. The AWS POST policy requires
  * `fields` to be serialized before `file` in the multipart body, so the
@@ -1028,6 +1052,10 @@ export async function uploadToPresignedUrl(
   fields: Record<string, string>,
   file: File,
 ): Promise<void> {
+  if (!isPresignedUrlTrusted(presignedUrl)) {
+    console.error('[uploadToPresignedUrl] Blocked upload to untrusted URL:', presignedUrl);
+    throw new Error('Upload failed — please try again.');
+  }
   const fd = new FormData();
   for (const [k, v] of Object.entries(fields)) fd.append(k, v);
   fd.append('file', file);
