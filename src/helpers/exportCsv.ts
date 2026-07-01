@@ -46,12 +46,15 @@ export function downloadCsv(filename: string, csv: string): void {
 }
 
 function escapeField(value: string): string {
-  let safe = value;
-  if (/^[=+\-@\t\r]/.test(safe)) {
-    safe = `\t${safe}`;
+  if (/^[=+\-@\t\r|]/.test(value) && Number.isNaN(Number(value))) {
+    const safe = `'${value}`;
+    if (safe.includes(',') || safe.includes('"') || safe.includes('\n') || safe.includes('\r')) {
+      return `"${safe.replace(/"/g, '""')}"`;
+    }
+    return safe;
   }
-  if (safe.includes(',') || safe.includes('"') || safe.includes('\n') || safe.includes('\r')) {
-    return `"${safe.replace(/"/g, '""')}"`;
+  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
+    return `"${value.replace(/"/g, '""')}"`;
   }
-  return safe;
+  return value;
 }
